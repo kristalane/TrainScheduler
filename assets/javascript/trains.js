@@ -50,10 +50,13 @@ dataRef.ref('trainData').on("child_added", function(childSnapshot) {
   var nextTime = moment(firstTime, "hmm")
   console.log("start of " + nextTime.format("YYYY-MM-DD HH:mm"));
 
+  // determining if nextTime is before the current time. While nextTime is before the current time, we add the frequency in minutes until it reaches the current time.
   while (nextTime.isBefore()) {
     nextTime.add(frequency, 'minutes');
     console.log("currently " + nextTime.format("HH:mm"));
   }
+
+  var minutesAway = nextTime.diff(moment(), 'minutes');
 
 
   $("tbody").append("<tr>"
@@ -61,5 +64,6 @@ dataRef.ref('trainData').on("child_added", function(childSnapshot) {
     + "<td>" + childSnapshot.val().destination + "</td>"
     + "<td>" + frequency + "</td>"
     + "<td>" + nextTime.format("hh:mm A") + "</td>"
+    + "<td>" + minutesAway + "</td>"
     + "</tr>");
 });
