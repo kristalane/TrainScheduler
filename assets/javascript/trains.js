@@ -14,33 +14,19 @@ firebase.initializeApp(config);
 
 var dataRef = firebase.database();
 
-var trainName = "";
-var destination = "";
-var firstTime = "HH:mm";
-var frequency = 0;
-var nextTime;
-// var minutesAway = 0;
-
-
-
 
 // Capture Button Click
 $("#add-train").on("click", function(event) {
   event.preventDefault();
 
   // Capture User Inputs and store them into variables
-  trainName = $("#name-input").val().trim();
-  destination = $("#destination-input").val().trim();
-  firstTime = $("#time-input").val().trim();
-  frequency = $("#frequency-input").val().trim();
+  var trainName = $("#name-input").val().trim();
+  var destination = $("#destination-input").val().trim();
+  var firstTime = $("#time-input").val().trim();
+  var frequency = $("#frequency-input").val().trim();
 
   // check if fields are valid inputs.
   if (trainName != "" && destination !="" && firstTime != "" && frequency != "") {
-
-    // if (Number.isInteger(frequency) === false) {
-    //   alert("Sorry; the frequency field needs to be a number for this to work")
-    // };
-
 
     // code to push to firebase
     dataRef.ref('trainData').push({
@@ -61,14 +47,19 @@ dataRef.ref('trainData').on("child_added", function(childSnapshot) {
   // dealing with time
   var frequency = childSnapshot.val().frequency;
   var firstTime = childSnapshot.val().firstTime;
-  var now = moment();
-  var nextTime = moment(firstTime).toNow("hh:mma");
-  console.log("it happened " + nextTime);
+  var nextTime = moment(firstTime, "hmm")
+  console.log("start of " + nextTime.format("YYYY-MM-DD HH:mm"));
+
+  while (nextTime.isBefore()) {
+    nextTime.add(frequency, 'minutes');
+    console.log("currently " + nextTime.format("HH:mm"));
+  }
 
 
   $("tbody").append("<tr>"
     + "<td>" + childSnapshot.val().trainName + "</td>"
     + "<td>" + childSnapshot.val().destination + "</td>"
     + "<td>" + frequency + "</td>"
+    + "<td>" + nextTime.format("hh:mm A") + "</td>"
     + "</tr>");
 });
