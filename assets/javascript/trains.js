@@ -1,6 +1,5 @@
 
 
-
 // Initialize Firebase
 var config = {
   apiKey: "AIzaSyA2mrxV8z0Qd313Wx5GgZl2c_1pmxZXglw",
@@ -25,10 +24,13 @@ $("#add-train").on("click", function(event) {
   var firstTime = $("#time-input").val().trim();
   var frequency = $("#frequency-input").val().trim();
 
-  // check if fields are valid inputs.
-  if (trainName != "" && destination !="" && firstTime != "" && frequency != "") {
+  // check for valid inputs
+  if (trainName != ""
+    && destination !=""
+    && firstTime != "" && frequency > "00:00" < "25:00"
+    && frequency != "") {
 
-    // code to push to firebase
+    // push data entered to firebase
     dataRef.ref('trainData').push({
         trainName: trainName,
         destination: destination,
@@ -40,25 +42,21 @@ $("#add-train").on("click", function(event) {
 
 });
 
-
-// loader
+// retrieve and manipulate data from firebase as added.
 dataRef.ref('trainData').on("child_added", function(childSnapshot) {
-  console.log("child_added");
   // dealing with time
   var frequency = childSnapshot.val().frequency;
   var firstTime = childSnapshot.val().firstTime;
-  var nextTime = moment(firstTime, "hmm")
-  console.log("start of " + nextTime.format("YYYY-MM-DD HH:mm"));
+  var nextTime = moment(firstTime, "hmm");
 
-  // determining if nextTime is before the current time. While nextTime is before the current time, we add the frequency in minutes until it reaches the current time.
+  // While nextTime is before the current time, add the frequency in minutes until it reaches the current time.
   while (nextTime.isBefore()) {
     nextTime.add(frequency, 'minutes');
-    console.log("currently " + nextTime.format("HH:mm"));
   }
-
+  // calculate the number of minutes the next train is from now.
   var minutesAway = nextTime.diff(moment(), 'minutes');
 
-
+  // display data in DOM
   $("tbody").append("<tr>"
     + "<td>" + childSnapshot.val().trainName + "</td>"
     + "<td>" + childSnapshot.val().destination + "</td>"
