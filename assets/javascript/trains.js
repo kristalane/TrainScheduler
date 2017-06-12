@@ -32,16 +32,16 @@
       frequency = $("#frequency-input").val().trim();
 
   // check if fields are valid inputs.
-  if(trainName != "" && destination !="" && firstTime != "" && frequency != "") {
+  if (trainName != "" && destination !="" && firstTime != "" && frequency != "") {
 
-  if (Number.isInteger(frequency) === false) {
-    alert("Sorry; the frequency field needs to be a number for this to work")
-  };
+  // if (Number.isInteger(frequency) === false) {
+  //   alert("Sorry; the frequency field needs to be a number for this to work")
+  // };
 
 
   // dealing with time
   var now = moment();
-  nextTime = moment(firstTime).toNow();
+  nextTime = moment(firstTime).toNow("hh:mma");
   console.log("it happened " + nextTime);
 
 
@@ -56,6 +56,6 @@
   };
   // loader
   dataRef.ref('trainData').on("child_added", function(childSnapshot) {
-    $("tbody").append("<tr><td>" + trainName + "<tr><td>" + destination + "<tr><td>" + frequency + "<tr><td>");
+    $("tbody").append("<tr><td>" + trainName + "<td>" + destination + "<td>" + frequency + "<td>");
   });
 });
